@@ -11,6 +11,7 @@ import (
 type AppConfig struct {
 	DBPort    uint
 	DBUser    string
+	DBPwd     string
 	DBHost    string
 	DBName    string
 	JWTSecret string
@@ -19,7 +20,7 @@ type AppConfig struct {
 func NewConfig() *AppConfig {
 	cfg := initConfig()
 	if cfg == nil {
-		log.Fatal("cannot run configuration setup")
+		log.Fatal("Cannot run configuration setup")
 		return nil
 	}
 
@@ -31,11 +32,12 @@ func initConfig() *AppConfig {
 
 	err := godotenv.Load("config.env")
 	if err != nil {
-		log.Error("config error:", err.Error)
+		log.Error("config error :", err.Error())
 		return nil
 	}
 
 	app.DBUser = os.Getenv("DB_USER")
+	app.DBPwd = os.Getenv("DB_PWD")
 	app.DBHost = os.Getenv("DB_HOST")
 	port, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {

@@ -17,9 +17,9 @@ func FailResponse(msg string) map[string]string {
 
 type RegisterResponse struct {
 	ID        uint   `json:"id"`
-	Judul     string `json:"judul"`
+	Judul     string `json:"Judul"`
 	Pengarang string `json:"pengarang"`
-	Pemilik   string `json:"pemilik"`
+	Pemilik   uint   `json:"pemilik"`
 }
 
 func ToResponse(core interface{}, code string) interface{} {
@@ -35,7 +35,12 @@ func ToResponse(core interface{}, code string) interface{} {
 			arr = append(arr, RegisterResponse{ID: val.ID, Judul: val.Judul, Pengarang: val.Pengarang, Pemilik: val.Pemilik})
 		}
 		res = arr
+	case "del":
+		cnv := core.(domain.Core)
+		res = RegisterResponse{ID: cnv.ID, Judul: cnv.Judul, Pengarang: cnv.Pengarang, Pemilik: cnv.Pemilik}
+	case "update":
+		cnv := core.(domain.Core)
+		res = RegisterResponse{ID: cnv.ID, Judul: cnv.Judul, Pengarang: cnv.Pengarang, Pemilik: cnv.Pemilik}
 	}
-
 	return res
 }

@@ -10,7 +10,7 @@ type Book struct {
 	gorm.Model
 	Judul     string
 	Pengarang string
-	Pemilik   string
+	Pemilik   uint
 }
 
 func FromDomain(du domain.Core) Book {
@@ -24,7 +24,6 @@ func FromDomain(du domain.Core) Book {
 
 func ToDomain(u Book) domain.Core {
 	return domain.Core{
-
 		ID:        u.ID,
 		Judul:     u.Judul,
 		Pengarang: u.Pengarang,
@@ -37,6 +36,5 @@ func ToDomainArray(au []Book) []domain.Core {
 	for _, val := range au {
 		res = append(res, domain.Core{ID: val.ID, Judul: val.Judul, Pengarang: val.Pengarang, Pemilik: val.Pemilik})
 	}
-
 	return res
 }

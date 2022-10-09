@@ -6,24 +6,28 @@ type Core struct {
 	ID        uint
 	Judul     string
 	Pengarang string
-	Pemilik   string
+	Pemilik   uint
 }
 
 type Repository interface {
-	Insert(newBook Core) (Core, error)
-	Update(updateBook Core) (Core, error)
-	Get(ID uint) (Core, error)
-	GetAll() ([]Core, error)
+	InsertBook(newBook Core) (Core, error)
+	UpdateBook(newBook Core) (Core, error)
+	GetAllBook() ([]Core, error)
+	DeleteBook(ID Core) error
 }
 
 type Service interface {
 	AddBook(newBook Core) (Core, error)
-	UpdateBook(updateBook Core) (Core, error)
-	Profile(ID uint) (Core, error)
+	UpdateBook(updatedData Core) (Core, error)
+	// MyBook(Pemilik uint) ([]Core, error)
 	ShowAllBook() ([]Core, error)
+	Delete(ID Core) error
+	ExtractToken(c echo.Context) uint
 }
 
 type Handler interface {
 	AddBook() echo.HandlerFunc
 	ShowAllBook() echo.HandlerFunc
+	UpdateBook() echo.HandlerFunc
+	DeleteBook() echo.HandlerFunc
 }

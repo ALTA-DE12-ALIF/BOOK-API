@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"main.go/features/book/domain"
 
 	"gorm.io/gorm"
@@ -16,42 +18,40 @@ func New(dbConn *gorm.DB) domain.Repository {
 	}
 }
 
-func (rq *repoQuery) Insert(newBook domain.Core) (domain.Core, error) {
+func (rq *repoQuery) InsertBook(newBook domain.Core) (domain.Core, error) {
 	var cnv Book
 	cnv = FromDomain(newBook)
 	if err := rq.db.Create(&cnv).Error; err != nil {
 		return domain.Core{}, err
 	}
-	// selesai dari DB
 	newBook = ToDomain(cnv)
 	return newBook, nil
 }
 
-func (rq *repoQuery) Update(updatedBook domain.Core) (domain.Core, error) {
+func (rq *repoQuery) UpdateBook(updatedData domain.Core) (domain.Core, error) {
 	var cnv Book
-	cnv = FromDomain(updatedBook)
-	if err := rq.db.Save(&cnv).Error; err != nil {
+	cnv = FromDomain(updatedData)
+	if err := rq.db.Where("id = ?", cnv.ID).Updates(&cnv).Error; err != nil {
 		return domain.Core{}, err
 	}
-	// selesai dari DB
-	updatedBook = ToDomain(cnv)
-	return updatedBook, nil
+	updatedData = ToDomain(cnv)
+	return updatedData, nil
 }
-func (rq *repoQuery) Get(ID uint) (domain.Core, error) {
-	var resQry Book
-	if err := rq.db.First(&resQry, "ID = ?", ID).Error; err != nil {
-		return domain.Core{}, err
-	}
-	// selesai dari DB
-	res := ToDomain(resQry)
-	return res, nil
-}
-func (rq *repoQuery) GetAll() ([]domain.Core, error) {
+
+func (rq *repoQuery) GetAllBook() ([]domain.Core, error) {
 	var resQry []Book
 	if err := rq.db.Find(&resQry).Error; err != nil {
 		return nil, err
 	}
-	// selesai dari DB
 	res := ToDomainArray(resQry)
 	return res, nil
+}
+
+func (rq *repoQuery) DeleteBook(ID domain.Core) error {
+	var res Book = FromDomain(ID)
+	if err := rq.db.Where("id = ?", res.ID).Delete(&res).Error; err != nil {
+		return errors.New("gagal delete")
+	}
+	// ID = ToDomain(res)
+	return errors.New("berhasil delete")
 }

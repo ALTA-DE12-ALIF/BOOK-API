@@ -3,6 +3,7 @@ package delivery
 import (
 	"net/http"
 
+	"github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/v4"
 	"main.go/features/book/domain"
 )
@@ -13,34 +14,89 @@ type bookHandler struct {
 
 func New(e *echo.Echo, srv domain.Service) {
 	handler := bookHandler{srv: srv}
-	e.GET("/books", handler.ShowAllBook())
-	e.POST("/books", handler.AddBook())
+	o := e.Group("/books")
+	o.Use(middleware.JWT([]byte("Same!!!12")))
+	o.GET("", handler.ShowAllBook())
+	o.POST("", handler.AddBook())
+	o.POST("/update", handler.UpdateBook())
+	o.POST("/delete", handler.DeleteBook())
 }
 
-func (us *bookHandler) ShowAllBook() echo.HandlerFunc {
+func (bs *bookHandler) AddBook() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		res, err := us.srv.ShowAllBook()
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+		id := bs.srv.ExtractToken(c)
+		if id == 0 {
+			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"message": "cannot validate token",
+			})
 		}
-
-		return c.JSON(http.StatusOK, SuccessResponse("success get all user", ToResponse(res, "all")))
-	}
-}
-
-func (us *bookHandler) AddBook() echo.HandlerFunc {
-	return func(c echo.Context) error {
 		var input RegisterFormat
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
 		}
 		cnv := ToDomain(input)
-		res, err := us.srv.AddBook(cnv)
+		res, err := bs.srv.AddBook(cnv)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 		}
-
 		return c.JSON(http.StatusCreated, SuccessResponse("berhasil register", ToResponse(res, "reg")))
 	}
+}
 
+func (bs *bookHandler) UpdateBook() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := bs.srv.ExtractToken(c)
+		if id == 0 {
+			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"message": "cannot validate token",
+			})
+		}
+		var input UpdateFormat
+		if err := c.Bind(&input); err != nil {
+			return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
+		}
+		cnv := ToDomain(input)
+		res, err := bs.srv.UpdateBook(cnv)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+		}
+		return c.JSON(http.StatusCreated, SuccessResponse("berhasil update", ToResponse(res, "reg")))
+	}
+}
+
+func (bs *bookHandler) ShowAllBook() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := bs.srv.ExtractToken(c)
+		if id == 0 {
+			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"message": "cannot validate token",
+			})
+		}
+		res, err := bs.srv.ShowAllBook()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+		}
+		return c.JSON(http.StatusCreated, SuccessResponse("Success get book", ToResponse(res, "all")))
+	}
+}
+
+func (bs *bookHandler) DeleteBook() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := bs.srv.ExtractToken(c)
+		if id == 0 {
+			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"message": "cannot validate token",
+			})
+		}
+		var input UpdateFormat
+		if err := c.Bind(&input); err != nil {
+			return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
+		}
+		cnv := ToDomain(input)
+		err := bs.srv.Delete(cnv)
+		if err != nil {
+			return c.JSON(http.StatusOK, SuccessResponse("Berhasil Delete", err))
+		}
+		return c.JSON(http.StatusBadRequest, FailResponse("Gagal Delete"))
+	}
 }

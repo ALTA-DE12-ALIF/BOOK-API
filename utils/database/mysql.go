@@ -10,9 +10,9 @@ import (
 )
 
 func InitDB(c *config.AppConfig) *gorm.DB {
-	str := fmt.Sprintf("%s:@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-
+	str := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		c.DBUser,
+		c.DBPwd,
 		c.DBHost,
 		c.DBPort,
 		c.DBName,
@@ -26,6 +26,7 @@ func InitDB(c *config.AppConfig) *gorm.DB {
 	return db
 }
 
-func migrateDB(db *gorm.DB) {
-	// db.AutoMigrate(&model.User{})
+func MigrateDB(db *gorm.DB) {
+	db.AutoMigrate(&user.Book{})
+	db.AutoMigrate(&book.User{})
 }

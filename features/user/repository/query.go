@@ -55,3 +55,14 @@ func (rq *repoQuery) GetAll() ([]domain.Core, error) {
 	res := ToDomainArray(resQry)
 	return res, nil
 }
+
+func (rq *repoQuery) Login(newUser domain.Core) (domain.Core, error) {
+	var resQry User
+	if err := rq.db.First(&resQry, "hp = ?", newUser.HP).Error; err != nil {
+		return domain.Core{}, err
+	}
+
+	// selesai dari DB
+	res := ToDomain(resQry)
+	return res, nil
+}

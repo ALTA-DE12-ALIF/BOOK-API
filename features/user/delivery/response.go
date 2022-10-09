@@ -15,6 +15,14 @@ func FailResponse(msg string) map[string]string {
 	}
 }
 
+func SuccessLogin(msg string, token string, data interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		"message": msg,
+		"data":    data,
+		"token":   token,
+	}
+}
+
 type RegisterResponse struct {
 	ID   uint   `json:"id"`
 	Nama string `json:"nama"`
