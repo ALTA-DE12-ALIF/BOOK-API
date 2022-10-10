@@ -7,6 +7,8 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"main.go/config"
+	user "main.go/features/book/repository"
+	book "main.go/features/user/repository"
 )
 
 func InitDB(c *config.AppConfig) *gorm.DB {

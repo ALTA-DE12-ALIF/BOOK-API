@@ -3,8 +3,8 @@ package delivery
 import (
 	"net/http"
 
-	"github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"main.go/features/book/domain"
 )
 
@@ -15,7 +15,7 @@ type bookHandler struct {
 func New(e *echo.Echo, srv domain.Service) {
 	handler := bookHandler{srv: srv}
 	o := e.Group("/books")
-	o.Use(middleware.JWT([]byte("Same!!!12")))
+	o.Use(middleware.JWT([]byte("Anakmama!!12")))
 	o.GET("", handler.ShowAllBook())
 	o.POST("", handler.AddBook())
 	o.POST("/update", handler.UpdateBook())

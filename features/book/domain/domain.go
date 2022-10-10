@@ -19,7 +19,6 @@ type Repository interface {
 type Service interface {
 	AddBook(newBook Core) (Core, error)
 	UpdateBook(updatedData Core) (Core, error)
-	// MyBook(Pemilik uint) ([]Core, error)
 	ShowAllBook() ([]Core, error)
 	Delete(ID Core) error
 	ExtractToken(c echo.Context) uint
